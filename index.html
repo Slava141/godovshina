@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Наша история ❤️</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-color: #0b0b0e;
+    --gold: #d4af37;
+    --text-color: #e0e0e0;
+    --font-serif: 'Cormorant Garamond', serif;
+    --font-sans: 'Montserrat', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--bg-color);
+    color: var(--text-color);
+    overflow-x: hidden;
+    scroll-behavior: smooth; 
+  }
+
+  /* ===== ЭКРАН 1 ===== */
+  #welcome {
+    position: fixed; inset: 0;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    background: radial-gradient(circle at center, #15151d 0%, #0b0b0e 100%);
+    z-index: 100; transition: opacity 1.5s ease, transform 1.5s ease;
+  }
+  #welcome.hidden { opacity: 0; transform: scale(1.05); pointer-events: none; }
+  
+  #welcome h1 {
+    font-family: var(--font-serif);
+    font-size: clamp(2.5em, 8vw, 5em);
+    color: var(--gold); font-weight: 400;
+    text-align: center; margin-bottom: 10px;
+    animation: fadeUp 1.5s ease;
+  }
+  #welcome p {
+    font-size: clamp(0.9em, 2vw, 1.1em);
+    letter-spacing: 2px; text-transform: uppercase;
+    color: #888; margin-bottom: 50px;
+    animation: fadeUp 1.8s ease;
+  }
+  #openBtn {
+    padding: 15px 40px; border: 1px solid var(--gold);
+    background: transparent; color: var(--gold);
+    font-family: var(--font-sans); font-size: 1em;
+    letter-spacing: 2px; text-transform: uppercase;
+    cursor: pointer; transition: all .3s ease;
+    animation: fadeUp 2.1s ease;
+  }
+  #openBtn:hover { background: var(--gold); color: var(--bg-color); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ===== ОСНОВНОЙ ЭКРАН ===== */
+  #main {
+    opacity: 0; transition: opacity 1.5s ease 0.5s;
+    padding: 80px 20px 100px; max-width: 900px; margin: 0 auto;
+    position: relative; z-index: 2;
+  }
+  #main.visible { opacity: 1; }
+
+  section.block { margin-bottom: 120px; }
+  section.block h3 {
+    font-family: var(--font-serif); font-size: 2.2em; color: var(--gold);
+    text-align: center; margin-bottom: 40px; font-weight: 400; font-style: italic;
+  }
+
+  /* ===== ТАЙМЕР ===== */
+  .timer-container {
+    display: flex; justify-content: center; gap: 15px;
+    margin-bottom: 60px; text-align: center;
+  }
+  .timer-box {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(212, 175, 55, 0.15);
+    padding: 15px 20px; border-radius: 8px; min-width: 90px;
+  }
+  .timer-num { font-family: var(--font-serif); font-size: 2.2em; color: var(--gold); line-height: 1; }
+  .timer-label { font-size: 0.65em; text-transform: uppercase; letter-spacing: 1px; color: #888; margin-top: 5px; }
+
+  /* ===== ФОТО ===== */
+  .gallery { display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; }
+  
+  .polaroid {
+    background: #fff; padding: 15px 15px 50px 15px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+    position: relative; width: 280px; cursor: pointer;
+    transform: translateY(50px); 
+    opacity: 0; 
+    transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.8s ease;
+  }
+  
+  .polaroid.show { opacity: 1; transform: translateY(0); }
+  
+  @media (min-width: 600px) {
+    .polaroid:nth-child(odd) { transform: translateY(50px) rotate(-3deg); }
+    .polaroid:nth-child(even) { transform: translateY(50px) rotate(3deg); }
+    .polaroid.show:nth-child(odd) { transform: translateY(0) rotate(-3deg); }
+    .polaroid.show:nth-child(even) { transform: translateY(0) rotate(3deg); }
+  }
+
+  @media (hover: hover) {
+    .polaroid:hover { transform: translateY(0) rotate(0) scale(1.05) !important; z-index: 10; box-shadow: 0 15px 50px rgba(212, 175, 55, 0.3); }
+  }
+  
+  .polaroid img {
+    width: 100%; height: 250px; object-fit: cover;
+    filter: sepia(100%) contrast(120%) brightness(80%); 
+    transition: filter 1.2s ease;
+  }
+  .polaroid.show img { filter: sepia(0%) contrast(100%) brightness(100%); }
+  
+  .polaroid::after {
+    content: 'Наш момент ❤️'; position: absolute; bottom: 15px; left: 0; right: 0;
+    text-align: center; font-family: var(--font-serif); color: #333; font-size: 1.2em;
+  }
+
+  /* ===== ФИНАЛЬНОЕ ФОТО С ЦВЕТАМИ (ЗОЛОТАЯ РАМКА) ===== */
+  .flower-block {
+    text-align: center;
+    margin-top: 80px;
+    margin-bottom: 50px;
+  }
+    .flower-polaroid {
+    display: inline-block;
+    /* Матовый темно-золотой/бронзовый фон */
+    background: #b89333; 
+    padding: 15px 15px 60px 15px;
+    /* Мягкое свечение вокруг */
+    box-shadow: 0 15px 30px rgba(212, 175, 55, 0.2);
+    position: relative; width: 100%; max-width: 400px; cursor: pointer;
+    transform: scale(0.95); opacity: 0;
+    transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.8s ease;
+    /* Тонкая окантовка в тон текста */
+    border: 1px solid #d4af37; 
+    border-radius: 4px;
+  }
+  .flower-polaroid.show {
+    opacity: 1; transform: scale(1);
+  }
+  .flower-polaroid:hover {
+    transform: scale(1.03);
+    box-shadow: 0 20px 60px rgba(212, 175, 55, 0.5);
+  }
+  
+  /* Внутренняя золотая рамка для фото */
+  .flower-polaroid img {
+    width: 100%; height: auto; max-height: 400px; object-fit: cover;
+    filter: sepia(100%) contrast(120%) brightness(80%); 
+    transition: filter 1.5s ease;
+    border: 1px solid #d4af37; /* Рамка вокруг фото в тон */
+    border-radius: 2px;
+  }
+  .flower-polaroid.show img { filter: sepia(0%) contrast(100%) brightness(100%); }
+  
+  /* Надпись внутри золотой рамки */
+  .flower-polaroid::after {
+    content: 'Твои любимые цветы...'; position: absolute; bottom: 20px; left: 0; right: 0;
+    text-align: center; font-family: var(--font-serif); 
+    color: #fff; /* Белый текст на золоте */
+    text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    font-size: 1.4em; font-style: italic;
+  }
+
+  /* ===== ПЛЕЕР ===== */
+  .player {
+    background: rgba(255,255,255,0.02); border: 1px solid rgba(212, 175, 55, 0.15);
+    border-radius: 12px; padding: 25px; display: flex; align-items: center; gap: 20px;
+    max-width: 600px; margin: 0 auto;
+  }
+  .playBtn {
+    width: 60px; height: 60px; border-radius: 50%; border: 1px solid var(--gold);
+    background: transparent; color: var(--gold); font-size: 1.5em; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; transition: all .3s ease;
+    flex-shrink: 0;
+  }
+  .playBtn:hover { background: var(--gold); color: var(--bg-color); }
+  .player-info { flex-grow: 1; }
+  .player-info .track { font-family: var(--font-serif); font-size: 1.3em; color: #fff; margin-bottom: 10px; }
+  .progress { width: 100%; height: 2px; background: rgba(255,255,255,.1); cursor: pointer; }
+  .progress-fill { height: 100%; width: 0%; background: var(--gold); transition: width .1s linear; }
+  .time { font-size: .8em; color: #888; margin-top: 8px; display: flex; justify-content: space-between; }
+  #audio { display: none; }
+
+  /* ===== ПОСЛАНИЕ ===== */
+  .letter {
+    font-family: var(--font-serif); font-size: 1.4em; line-height: 1.8;
+    color: #ccc; text-align: center; max-width: 700px; margin: 0 auto;
+    white-space: pre-line; text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+  }
+
+  /* ===== ГЕНЕРАТОР ПРИЧИН ===== */
+  .reasons-box {
+    text-align: center; background: rgba(212, 175, 55, 0.05);
+    border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 15px; padding: 40px;
+    max-width: 700px; margin: 0 auto; cursor: pointer; transition: background .3s;
+  }
+  .reasons-box:hover { background: rgba(212, 175, 55, 0.1); }
+  .reason-text {
+    font-family: var(--font-serif); font-size: 1.6em; color: var(--gold);
+    min-height: 100px; display: flex; align-items: center; justify-content: center;
+    transition: opacity 0.5s ease; line-height: 1.4;
+  }
+
+  /* Кнопка звука */
+  #muteBtn {
+    position: fixed; top: 20px; right: 20px; z-index: 150;
+    padding: 10px 20px; border: 1px solid rgba(212, 175, 55, 0.3);
+    background: transparent; color: var(--gold); cursor: pointer;
+    font-family: var(--font-sans); font-size: 0.8em; text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+
+  <button id="muteBtn">🔊 Звук</button>
+
+  <div id="welcome">
+    <h1>Любимая</h1>
+    <p>С годовщиной ❤️</p>
+    <button id="openBtn">Открыть</button>
+  </div>
+
+  <div id="main">
+    
+    <!-- ТАЙМЕР -->
+    <div class="timer-container">
+      <div class="timer-box"><div class="timer-num" id="years">0</div><div class="timer-label">Лет</div></div>
+      <div class="timer-box"><div class="timer-num" id="months">0</div><div class="timer-label">Месяцев</div></div>
+      <div class="timer-box"><div class="timer-num" id="days">0</div><div class="timer-label">Дней</div></div>
+    </div>
+
+    <!-- ФОТО (6 ШТУК) -->
+    <section class="block">
+      <h3>Мгновения, которые мы бережем</h3>
+      <div class="gallery">
+        <div class="polaroid"><img src="photos/1.jpg" alt="Фото 1" onerror="this.style.display='none'"></div>
+        <div class="polaroid"><img src="photos/2.jpg" alt="Фото 2" onerror="this.style.display='none'"></div>
+        <div class="polaroid"><img src="photos/3.jpg" alt="Фото 3" onerror="this.style.display='none'"></div>
+        <div class="polaroid"><img src="photos/4.jpg" alt="Фото 4" onerror="this.style.display='none'"></div>
+        <div class="polaroid"><img src="photos/5.jpg" alt="Фото 5" onerror="this.style.display='none'"></div>
+        <div class="polaroid"><img src="photos/6.jpg" alt="Фото 6" onerror="this.style.display='none'"></div>
+      </div>
+    </section>
+
+    <!-- ПЕСНЯ -->
+    <section class="block">
+      <h3>Наш саундтрек</h3>
+      <div class="player">
+        <button class="playBtn" id="playBtn">▶</button>
+        <div class="player-info">
+          <div class="track">🎵 Ах, какая женщина — Фристайл</div>
+          <div class="progress" id="progress"><div class="progress-fill" id="progressFill"></div></div>
+          <div class="time"><span id="curTime">0:00</span><span id="durTime">0:00</span></div>
+        </div>
+      </div>
+      <audio id="audio" loop src="song.mp3"></audio>
+    </section>
+
+    <!-- ПОСЛАНИЕ -->
+    <section class="block">
+      <h3>Слова, которые я хочу тебе сказать</h3>
+      <div class="letter">
+Спасибо тебе за ещё один год прожитый рядом с тобою.
+За каждый день,  за каждую улыбку, за то, что ты со мною рядом.
+Я люблю тебя с каждым днём всё сильнее.
+С годовщиной, моя любимая!!! 💖</div>
+    </section>
+
+    <!-- ГЕНЕРАТОР ПРИЧИН -->
+    <section class="block">
+      <h3>За что я тебя ценю</h3>
+      <div class="reasons-box" id="reasonsBox">
+        <div class="reason-text" id="reasonText">Нажми сюда, чтобы узнать 👆</div>
+      </div>
+    </section>
+
+    <!-- ФИНАЛЬНОЕ ФОТО С ЦВЕТАМИ -->
+    <section class="flower-block">
+      <div class="flower-polaroid" id="flowerPhoto">
+        <img src="photos/7.jpg" alt="Цветы" onerror="this.style.display='none'">
+      </div>
+    </section>
+
+  </div>
+
+  <div id="lightbox" style="position:fixed;inset:0;background:rgba(0,0,0,0.95);display:none;justify-content:center;align-items:center;z-index:200;cursor:zoom-out;"><img src="" alt="" style="max-width:90vw;max-height:90vh;box-shadow:0 0 50px rgba(212,175,55,.3);"></div>
+
+<script>
+  // ===== Элементы =====
+  const welcome   = document.getElementById('welcome');
+  const main      = document.getElementById('main');
+  const openBtn   = document.getElementById('openBtn');
+  const audio     = document.getElementById('audio');
+  audio.volume = 0.3;
+  const playBtn   = document.getElementById('playBtn');
+  const muteBtn   = document.getElementById('muteBtn');
+  const progress  = document.getElementById('progress');
+  const fill      = document.getElementById('progressFill');
+  const curTime   = document.getElementById('curTime');
+  const durTime   = document.getElementById('durTime');
+
+  document.body.style.overflow = 'hidden';
+
+  // ===== Открытие =====
+  openBtn.addEventListener('click', () => {
+    welcome.classList.add('hidden');
+    main.classList.add('visible');
+    document.body.style.overflow = 'auto';
+    startParticlesAnimation(); 
+    audio.play().then(() => playBtn.textContent = '⏸').catch(e => console.log(e));
+    
+    setTimeout(() => { checkPhotos(); }, 100);
+  });
+
+  // ===== ТАЙМЕР =====
+
+  const startDate = new Date(1998, 9, 31, 0, 0); 
+
+  function updateTimer() {
+    const now = new Date();
+    let years = now.getFullYear() - startDate.getFullYear();
+    let months = now.getMonth() - startDate.getMonth();
+    let days = now.getDate() - startDate.getDate();
+
+    if (days < 0) {
+      months--;
+      const prevMonth = new Date(now.getFullYear(), now.getMonth(), 0).getDate();
+      days += prevMonth;
+    }
+    if (months < 0) {
+      years--;
+      months += 12;
+    }
+
+    document.getElementById('years').textContent = years;
+    document.getElementById('months').textContent = months;
+    document.getElementById('days').textContent = days;
+  }
+  
+  setInterval(updateTimer, 1000 * 60 * 60); 
+  updateTimer();
+
+  // ===== ПЛЕЕР =====
+  playBtn.addEventListener('click', () => {
+    if (audio.paused) { audio.play(); playBtn.textContent = '⏸'; } 
+    else { audio.pause(); playBtn.textContent = '▶'; }
+  });
+
+  audio.addEventListener('timeupdate', () => {
+    if (audio.duration) {
+      fill.style.width = (audio.currentTime / audio.duration) * 100 + '%';
+      curTime.textContent = formatTime(audio.currentTime);
+    }
+  });
+  audio.addEventListener('loadedmetadata', () => durTime.textContent = formatTime(audio.duration));
+  function formatTime(sec) {
+    if (isNaN(sec)) return '0:00';
+    return Math.floor(sec / 60) + ':' + Math.floor(sec % 60).toString().padStart(2, '0');
+  }
+  progress.addEventListener('click', e => {
+    const rect = progress.getBoundingClientRect();
+    if (audio.duration) audio.currentTime = ((e.clientX - rect.left) / rect.width) * audio.duration;
+  });
+  muteBtn.addEventListener('click', () => {
+    if (audio.paused) { audio.play(); playBtn.textContent = '⏸'; muteBtn.textContent = '🔊 Звук'; }
+    else { audio.pause(); playBtn.textContent = '▶'; muteBtn.textContent = '🔇 Звук'; }
+  });
+
+  // ===== ЭФФЕКТ ПРОЯВЛЕНИЯ =====
+  function checkPhotos() {
+    const polaroids = document.querySelectorAll('.polaroid');
+    polaroids.forEach(p => {
+      const rect = p.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+      if (rect.top < windowHeight - 50 && rect.bottom > 0) {
+        p.classList.add('show');
+      }
+    });
+
+    const flowerPhoto = document.getElementById('flowerPhoto');
+    if (flowerPhoto) {
+      const rect = flowerPhoto.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+      if (rect.top < windowHeight - 50 && rect.bottom > 0) {
+        flowerPhoto.classList.add('show');
+      }
+    }
+  }
+  window.addEventListener('scroll', checkPhotos);
+  window.addEventListener('load', checkPhotos);
+
+  // ===== ГЕНЕРАТОР ПРИЧИН =====
+  const reasons = [
+    "За твою мудрость и умение слушать",
+    "За тот уют, который ты создаешь вокруг",
+    "За твою поддержку в любых ситуациях",
+    "За твою искренность и надежность",
+    "Ты — мой самый близкий человек. Я тебя очень сильно люблю. ❤️"
+  ];
+  
+  const reasonsBox = document.getElementById('reasonsBox');
+  const reasonText = document.getElementById('reasonText');
+  let reasonIndex = 0;
+
+  reasonsBox.addEventListener('click', () => {
+    reasonText.style.opacity = '0';
+    setTimeout(() => {
+      reasonIndex++;
+      if (reasonIndex >= reasons.length) reasonIndex = 0;
+      reasonText.textContent = reasons[reasonIndex];
+      reasonText.style.opacity = '1';
+    }, 300);
+  });
+
+  // ===== ОБЪЕДИНЕННЫЙ ЭФФЕКТ (ЗВЕЗДЫ + СЕРДЕЧКИ) =====
+  function startParticlesAnimation() {
+    const canvas = document.createElement('canvas');
+    canvas.style.position = 'fixed'; 
+    canvas.style.inset = '0';
+    canvas.style.zIndex = '1'; 
+    canvas.style.pointerEvents = 'none';
+    document.body.appendChild(canvas);
+    const ctx = canvas.getContext('2d');
+    
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+    
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    // Звезды
+    const stars = [];
+    for(let i=0; i<50; i++) {
+      stars.push({
+        x: Math.random() * width, y: Math.random() * height,
+        r: Math.random() * 1.5 + 0.5, speedY: Math.random() * 0.5 + 0.2,
+        opacity: Math.random() * 0.5 + 0.1
+      });
+    }
+
+    // Сердечки
+    const hearts = [];
+    const maxHearts = 40;
+    const colors = ['#d4af37', '#ff3333', '#ff6666', '#aa0000'];
+
+    function drawHeart(ctx, x, y, size, color) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.scale(size / 20, size / 20);
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.bezierCurveTo(-10, -10, -20, 5, 0, 20);
+      ctx.bezierCurveTo(20, 5, 10, -10, 0, 0);
+      ctx.fillStyle = color;
+      ctx.fill();
+      ctx.restore();
+    }
+
+    class Heart {
+      constructor() {
+        this.reset();
+        this.y = Math.random() * height; 
+      }
+      reset() {
+        this.x = Math.random() * width;
+        this.y = -50;
+        this.size = Math.random() * 10 + 8;
+        this.speedY = Math.random() * 1.5 + 1;
+        this.color = colors[Math.floor(Math.random() * colors.length)];
+        this.opacity = 0;
+        this.state = 'falling';
+        this.restStart = 0;
+        this.targetY = height * 0.8 + Math.random() * (height * 0.2 - 30);
+      }
+      update() {
+        if (this.state === 'falling') {
+          this.opacity += 0.05;
+          if (this.opacity > 1) this.opacity = 1;
+          this.y += this.speedY;
+          if (this.y >= this.targetY) {
+            this.state = 'resting';
+            this.y = this.targetY;
+            this.restStart = Date.now();
+          }
+        } else if (this.state === 'resting') {
+          if (Date.now() - this.restStart > 3000 + Math.random() * 2000) {
+            this.state = 'fading';
+          }
+        } else if (this.state === 'fading') {
+          this.opacity -= 0.01;
+          this.y += 0.2;
+          if (this.opacity <= 0) { this.reset(); }
+        }
+      }
+      draw() {
+        ctx.globalAlpha = this.opacity;
+        drawHeart(ctx, this.x, this.y, this.size, this.color);
+        ctx.globalAlpha = 1;
+      }
+    }
+
+    for (let i = 0; i < maxHearts; i++) { hearts.push(new Heart()); }
+
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+      stars.forEach(p => {
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(212, 175, 55, ${p.opacity})`; ctx.fill();
+        p.y -= p.speedY;
+        if (p.y < 0) { p.y = height; p.x = Math.random() * width; }
+      });
+      hearts.forEach(heart => { heart.update(); heart.draw(); });
+      requestAnimationFrame(animate);
+    }
+    animate();
+  }
+
+  // ===== ЛАЙТБОКС =====
+  const lightbox = document.getElementById('lightbox');
+  const lbImg    = lightbox.querySelector('img');
+
+  document.querySelectorAll('.polaroid img, .flower-polaroid img').forEach(img => {
+    img.addEventListener('click', (e) => {
+      e.stopPropagation();
+      lbImg.src = img.src;
+      lightbox.style.display = 'flex';
+    });
+  });
+  lightbox.addEventListener('click', () => {
+    lightbox.style.display = 'none';
+    lbImg.src = '';
+  });
+</script>
+</body>
+</html>
